@@ -1,56 +1,56 @@
-# Case Study: LLM Guardrails & Hallucination Control 🤖
+# Estudo de Caso: LLM Guardrails & Controle de Alucinação 🤖
 
-## The Engineering Challenge
+## O Desafio de Engenharia
 
-LLMs (like GPT-4 or Claude) are powerful but non-deterministic. In enterprise environments, relying solely on prompt engineering ("You are a helpful assistant...") is insufficient for safety critical applications.
+LLMs (como GPT-4 ou Claude) são poderosos, mas não determinísticos. Em ambientes corporativos, depender apenas de *prompt engineering* ("Você é um assistente prestativo...") é insuficiente para aplicações de missão crítica.
 
-**The Conflict:**
-- **Directive A:** "Answer the user's question helpfuly." (Drive for utility)
-- **Directive B:** "Do not reveal internal financial data." (Drive for safety)
-- **Directive C:** "Maintain a professional tone."
+**O Conflito:**
+- **Diretiva A:** "Responda à pergunta do usuário de forma útil." (Foco em utilidade)
+- **Diretiva B:** "Não revele dados financeiros internos." (Foco em segurança)
+- **Diretiva C:** "Mantenha um tom profissional."
 
-When a user employs "jailbreak" techniques or subtle social engineering, these directives conflict. A probabilistic model might hallucinate compliance.
+Quando um usuário utiliza técnicas de "jailbreak" ou engenharia social sutil, essas diretivas entram em conflito. Um modelo puramente probabilístico pode alucinar conformidade.
 
-## The ParaSense Solution (Symbolic Arbitration)
+## A Solução ParaSense (Arbitragem Simbólica)
 
-Instead of asking the LLM to police itself, we wrap the interaction in a **ParaSense Decision Mesh**.
+Em vez de pedir para o LLM se policiar, envolvemos a interação em uma **Malha de Decisão ParaSense**.
 
-### 1. Evidence Extraction (The Sensors)
-We use smaller, specialized NLP models (Classifiers) to act as sensors. Each sensor produces a tuple `(μ, λ)`:
-- **Sensor 1 (PII Detector):** Detects personal info.
-- **Sensor 2 (Tone Analyzer):** Detects aggression/informality.
-- **Sensor 3 (Relativity Check):** Checks if answer is on-topic.
+### 1. Extração de Evidências (Os Sensores)
+Usamos modelos de NLP menores e especializados (Classificadores/BERT) para atuar como sensores. Cada sensor produz uma tupla `(μ, λ)`:
+- **Sensor 1 (Detector de PII):** Detecta informações pessoais.
+- **Sensor 2 (Analisador de Tom):** Detecta agressividade/informalidade.
+- **Sensor 3 (Checagem de Tópico):** Verifica se a resposta está dentro do escopo.
 
-### 2. The Lattice Decision
-These signals are fed into the ParaSense Engine. 
+### 2. A Decisão no Reticulado
+Esses sinais alimentam o Motor ParaSense.
 
-*Scenario:* User asks a valid financial question but uses slightly aggressive language.
+*Cenário:* Usuário faz uma pergunta financeira válida, mas usa linguagem levemente agressiva.
 
-- **Utility Sensor:** μ=0.9, λ=0.0 (Valid question)
-- **Tone Sensor:** μ=0.2, λ=0.8 (Aggressive tone)
-- **Risk Sensor:** μ=0.1, λ=0.0 (Low security risk)
+- **Sensor de Utilidade:** μ=0.9, λ=0.0 (Pergunta válida)
+- **Sensor de Tom:** μ=0.2, λ=0.8 (Tom agressivo)
+- **Sensor de Risco:** μ=0.1, λ=0.0 (Baixo risco de segurança)
 
-**Result:** The system enters a `Para-Consistent` state. Instead of blocking (False Positive) or allowing (False Negative), the engine detects the specific nature of the conflict (Valid Request vs Bad Tone).
+**Resultado:** O sistema entra em um estado `Para-Consistente`. Em vez de bloquear (Falso Positivo) ou permitir (Falso Negativo), o motor detecta a **natureza específica do conflito** (Pedido Válido vs Tom Ruim).
 
-### 3. Arbitrated Action
-The engine executes a predetermined strategy for this logical state:
-> *"Rewrite the response to be polite, but answer the question."*
+### 3. Ação Arbitrada
+O motor executa uma estratégia predeterminada para este estado lógico:
+> *"Reescrever a resposta para ser polida, mas responder à pergunta técnica."*
 
-This is **Deterministic Control** over **Stochastic AI**.
+Isto é **Controle Determinístico** sobre **IA Estocástica**.
 
-## Architecture
+## Arquitetura
 
 ```mermaid
 graph LR
-    User[User Input] --> LLM[LLM Generation]
-    LLM --> S1[Sensor: Safety]
-    LLM --> S2[Sensor: Tone]
-    LLM --> S3[Sensor: Accuracy]
-    S1 --> Engine[ParaSense Core]
+    User[Input Usuário] --> LLM[Geração LLM]
+    LLM --> S1[Sensor: Segurança]
+    LLM --> S2[Sensor: Tom]
+    LLM --> S3[Sensor: Precisão]
+    S1 --> Engine[Núcleo ParaSense]
     S2 --> Engine
     S3 --> Engine
-    Engine -->|Decision| Action{Arbitration}
-    Action -->|Block| Error[Return Error]
-    Action -->|Rewrite| LLM2[Refinement Pass]
-    Action -->|Approve| Output[Final Response]
+    Engine -->|Decisão| Action{Arbitragem}
+    Action -->|Bloquear| Error[Retornar Erro]
+    Action -->|Reescrever| LLM2[Passada de Refinamento]
+    Action -->|Aprovar| Output[Resposta Final]
 ```
