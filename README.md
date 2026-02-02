@@ -16,5 +16,9 @@ Unlike standard machine learning approaches (which rely on statistical probabili
 **Problem:** Detecting fraud in high-frequency betting markets where user behavior signals are often contradictory (e.g., trusted device + anomalous bet size).
 **Solution:** A decision lattice that accepts conflicting signals and computes a "Risk Energy" score, blocking transactions only when the contradiction exceeds a safety threshold.
 
+### 3. [CRM Cognitivo & Lead Scoring](./lead-scoring) (PT-BR)
+**Problema:** CRMs tradicionais somam pontos linearmente, confundindo "Curiosos sem dinheiro" com "Compradores reais".
+**Solução:** Uso do MPD para detectar a contradição entre *Interesse* (Engajamento) e *Capacidade* (Renda), filtrando leads inconsistentes e priorizando vendas reais.
+
 ---
 *Engineering Decision Systems by [Pedro Merino](https://github.com/pedromerino)*
